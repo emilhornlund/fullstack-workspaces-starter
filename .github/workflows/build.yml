@@ -1,0 +1,47 @@
+name: Build and Test
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Clean
+        run: yarn clean
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+      - name: Test Common
+        run: yarn test:common:cov
+
+      - name: Test API
+        run: yarn test:api:cov
+
+      - name: Test Web
+        run: yarn test:web:cov
+
+      - name: E2E API
+        run: yarn e2e:api:cov
+
+      - name: E2E Web
+        run: yarn e2e:web
+        env:
+          CI: true
